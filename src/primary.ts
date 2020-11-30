@@ -1,4 +1,5 @@
 import {app, BrowserWindow, ipcMain} from 'electron';
+import path from "path";
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -9,9 +10,11 @@ const createWindow = () => {
      height: 0.5,
       webPreferences: {
          devTools: true,
-          contextIsolation: true
+         contextIsolation: true,
+         preload: path.join(__dirname, 'preload.js')
       },
       show: false
+
   });
   // and load the initial/main page of the app.
 
@@ -24,6 +27,10 @@ const createWindow = () => {
     });
 
     mainWindow.webContents.openDevTools();
+
+    mainWindow.webContents.on('dom-ready', () => {
+       mainWindow?.webContents.send('window-loaded', '');
+    });
 };
 
 // This method will be called when Electron has finished
